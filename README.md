@@ -3,6 +3,7 @@
 The application has a few dependencies or order to get working:
 
 Emotiv App: https://www.emotiv.com/emotiv-bci/
+
 node.js:    https://nodejs.org/en/
 
 With node.js, you should also install the node package manager (npm). Navigate to the directory containing the GitHub clone, and type the following:
