@@ -26,4 +26,5 @@ node app
 ```
 
 Note: Be sure to always have the server running before opening the html file, or you may encounter errors.
+
 This time, the server should start successfully and provide you with a session ID. The app may require permission from your operating system to access a port, allow it. Open the html file provided in this repository, and you should be able to see you performance metrics in real time! 
