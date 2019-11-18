@@ -1,108 +1,99 @@
 const WebSocket = require('ws');
-const http = require('http');
 
-/**
- * Cortex: Class
- */
 class Cortex {
     constructor (user, socketUrl) {
-        process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0
-        this.socket = new WebSocket(socketUrl)
-        this.user = user
-        this.data = ""
+        process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
+        this.socket = new WebSocket(socketUrl);
+        this.user = user;
+        this.data = "";
     }
 
     queryHeadsetId() {
-        const QUERY_HEADSET_ID = 2
-        let socket = this.socket
+        const QUERY_HEADSET_ID = 2;
+        let socket = this.socket;
         let queryHeadsetRequest = {
             "jsonrpc": "2.0", 
             "id": QUERY_HEADSET_ID,
             "method": "queryHeadsets",
             "params": {}
-        }
+        };
 
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             socket.send(JSON.stringify(queryHeadsetRequest));
             socket.on('message', (data) => {
                 try {
                     if (JSON.parse(data)['id'] == QUERY_HEADSET_ID) {
-                        // console.log(data)
-                        // console.log(JSON.parse(data)['result'].length)
                         if (JSON.parse(data)['result'].length > 0) {
-                            let headsetId = JSON.parse(data)['result'][0]['id']
-                            resolve(headsetId)
+                            let headsetId = JSON.parse(data)['result'][0]['id'];
+                            resolve(headsetId);
                         }
                         else {
-                            console.log('No headset connected to Emotiv Apps, please ensure headset is properly connected.')
+                            console.log('No headset connected to Emotiv Apps, please ensure headset is properly connected.');
                         }
                     }
                    
                 } catch (error) { }
-            })
-        })
+            });
+        });
     }
 
     requestAccess() {
-        let socket = this.socket
-        let user = this.user
+        const REQUEST_ACCESS_ID = 1;
+        let socket = this.socket;
+        let user = this.user;
+        let requestAccessRequest = {
+            "jsonrpc": "2.0", 
+            "method": "requestAccess", 
+            "params": { 
+                "clientId": user.clientId, 
+                "clientSecret": user.clientSecret
+            },
+            "id": REQUEST_ACCESS_ID
+        };
 
-        return new Promise(function(resolve, reject) {
-            const REQUEST_ACCESS_ID = 1
-            let requestAccessRequest = {
-                "jsonrpc": "2.0", 
-                "method": "requestAccess", 
-                "params": { 
-                    "clientId": user.clientId, 
-                    "clientSecret": user.clientSecret
-                },
-                "id": REQUEST_ACCESS_ID
-            }
-
-            // console.log('start send request: ',requestAccessRequest)
+        return new Promise((resolve, reject) => {
             socket.send(JSON.stringify(requestAccessRequest));
-
             socket.on('message', (data) => {
                 try {
                     if (JSON.parse(data)['id']==REQUEST_ACCESS_ID) {
-                        resolve(data)
+                        resolve(data);
                     }
                 } catch (error) { }
-            })
-        })
+            });
+        });
     }
 
     authorize() {
-        let socket = this.socket
-        let user = this.user
+        const AUTHORIZE_ID = 4;
+        let socket = this.socket;
+        let user = this.user;
+        let authorizeRequest = { 
+            "jsonrpc": "2.0", "method": "authorize", 
+            "params": { 
+                "clientId": user.clientId, 
+                "clientSecret": user.clientSecret, 
+                "license": user.license, 
+                "debit": user.debit
+            },
+            "id": AUTHORIZE_ID
+        };
 
-        return new Promise(function(resolve, reject) {
-            const AUTHORIZE_ID = 4
-            let authorizeRequest = { 
-                "jsonrpc": "2.0", "method": "authorize", 
-                "params": { 
-                    "clientId": user.clientId, 
-                    "clientSecret": user.clientSecret, 
-                    "license": user.license, 
-                    "debit": user.debit
-                },
-                "id": AUTHORIZE_ID
-            }
-            socket.send(JSON.stringify(authorizeRequest))
+        return new Promise((resolve, reject) => {
+            socket.send(JSON.stringify(authorizeRequest));
             socket.on('message', (data) => {
                 try {
                     if (JSON.parse(data)['id']==AUTHORIZE_ID) {
-                        let cortexToken = JSON.parse(data)['result']['cortexToken']
-                        resolve(cortexToken)
+                        let cortexToken = JSON.parse(data)['result']['cortexToken'];
+                        resolve(cortexToken);
                     }
                 } catch (error) { }
-            })
-        })
+            });
+        });
     }
 
     controlDevice(headsetId) {
-        let socket = this.socket
-        const CONTROL_DEVICE_ID = 3
+        const CONTROL_DEVICE_ID = 3;
+        let socket = this.socket;
         let controlDeviceRequest = {
             "jsonrpc": "2.0",
             "id": CONTROL_DEVICE_ID,
@@ -111,23 +102,23 @@ class Cortex {
                 "command": "connect",
                 "headset": headsetId
             }
-        }
+        };
 
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             socket.send(JSON.stringify(controlDeviceRequest));
             socket.on('message', (data) => {
                 try {
                     if (JSON.parse(data)['id']==CONTROL_DEVICE_ID) {
-                        resolve(data)
+                        resolve(data);
                     }
                 } catch (error) { }
-            })
-        }) 
+            });
+        });
     }
 
     createSession(authToken, headsetId) {
-        let socket = this.socket
-        const CREATE_SESSION_ID = 5
+        const CREATE_SESSION_ID = 5;
+        let socket = this.socket;
         let createSessionRequest = { 
             "jsonrpc": "2.0",
             "id": CREATE_SESSION_ID,
@@ -137,26 +128,24 @@ class Cortex {
                 "headset": headsetId,
                 "status": "active"
             }
-        }
+        };
 
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             socket.send(JSON.stringify(createSessionRequest));
             socket.on('message', (data) => {
-                // console.log(data)
                 try {
                     if (JSON.parse(data)['id']==CREATE_SESSION_ID) {
-                        let sessionId = JSON.parse(data)['result']['id']
-                        resolve(sessionId)
+                        let sessionId = JSON.parse(data)['result']['id'];
+                        resolve(sessionId);
                     }
                 } catch (error) { }
-            })
-        })
+            });
+        });
     }
 
     startRecord(authToken, sessionId, recordName) {
-        let socket = this.socket
-        const CREATE_RECORD_REQUEST_ID = 11
-
+        const CREATE_RECORD_REQUEST_ID = 11;
+        let socket = this.socket;
         let createRecordRequest = {
             "jsonrpc": "2.0", 
             "method": "updateSession", 
@@ -169,25 +158,25 @@ class Cortex {
                 "groupName": "QA"
             }, 
             "id": CREATE_RECORD_REQUEST_ID
-        }
+        };
 
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             socket.send(JSON.stringify(createRecordRequest));
             socket.on('message', (data) => {
                 try {
                     if (JSON.parse(data)['id']==CREATE_RECORD_REQUEST_ID) {
-                        console.log('CREATE RECORD RESULT --------------------------------')
-                        console.log(data)
-                        resolve(data)
+                        console.log('CREATE RECORD RESULT --------------------------------');
+                        console.log(data);
+                        resolve(data);
                     }
                 } catch (error) { }
-            })
-        })
+            });
+        });
     }
 
-    stopRecord(authToken, sessionId, recordName){
-        let socket = this.socket
-        const STOP_RECORD_REQUEST_ID = 12
+    stopRecord(authToken, sessionId, recordName) {
+        const STOP_RECORD_REQUEST_ID = 12;
+        let socket = this.socket;
         let stopRecordRequest = {
             "jsonrpc": "2.0", 
             "method": "updateSession", 
@@ -200,25 +189,25 @@ class Cortex {
                 "groupName": "QA"
             }, 
             "id": STOP_RECORD_REQUEST_ID
-        }
+        };
 
-        return new Promise(function(resolve, reject){
+        return new Promise((resolve, reject) => {
             socket.send(JSON.stringify(stopRecordRequest));
-            socket.on('message', (data)=>{
+            socket.on('message', (data) => {
                 try {
-                    if(JSON.parse(data)['id']==STOP_RECORD_REQUEST_ID){
-                        console.log('STOP RECORD RESULT --------------------------------')
-                        console.log(data)
-                        resolve(data)
+                    if (JSON.parse(data)['id']==STOP_RECORD_REQUEST_ID) {
+                        console.log('STOP RECORD RESULT --------------------------------');
+                        console.log(data);
+                        resolve(data);
                     }
                 } catch (error) { }
-            })
-        })
+            });
+        });
     }
 
-    subRequest(stream, authToken, sessionId){
-        let socket = this.socket
-        const SUB_REQUEST_ID = 6 
+    subRequest(stream, authToken, sessionId) {
+        const SUB_REQUEST_ID = 6;
+        let socket = this.socket;
         let subRequest = { 
             "jsonrpc": "2.0", 
             "method": "subscribe", 
@@ -228,18 +217,14 @@ class Cortex {
                 "streams": stream
             }, 
             "id": SUB_REQUEST_ID
-        }
-        // console.log('sub eeg request: ', subRequest)
-        socket.send(JSON.stringify(subRequest))
-        socket.on('message', (data)=>{
+        };
+        
+        socket.send(JSON.stringify(subRequest));
+        socket.on('message', (data) => {
             try {
-                // if(JSON.parse(data)['id']==SUB_REQUEST_ID){
-                //  console.log('SUB REQUEST RESULT --------------------------------')
-                //  console.log(data)
-                //  console.log('\r\n')
-                // }
+
             } catch (error) { }
-        })
+        });
     }
 
     /**
@@ -248,36 +233,36 @@ class Cortex {
      * - authentication and get back auth token
      * - create session and get back session id
      */
-    async querySessionInfo(){
-        let headsetId=""
-        await this.queryHeadsetId().then((headset)=>{headsetId = headset})
-        this.headsetId = headsetId
+    async querySessionInfo() {
+        let headsetId = "";
+        await this.queryHeadsetId().then((headset)=>{headsetId = headset});
+        this.headsetId = headsetId;
 
-        let ctResult=""
-        await this.controlDevice(headsetId).then((result)=>{ctResult=result})
-        this.ctResult = ctResult
-        console.log(ctResult)
+        let ctResult = "";
+        await this.controlDevice(headsetId).then((result)=>{ctResult=result});
+        this.ctResult = ctResult;
+        console.log(ctResult);
 
-        let authToken=""
-        await this.authorize().then((auth)=>{authToken = auth})
-        this.authToken = authToken
+        let authToken = ""
+        await this.authorize().then((auth)=>{authToken = auth});
+        this.authToken = authToken;
 
-        let sessionId = ""
-        await this.createSession(authToken, headsetId).then((result)=>{sessionId=result})
-        this.sessionId = sessionId
+        let sessionId = "";
+        await this.createSession(authToken, headsetId).then((result)=>{sessionId=result});
+        this.sessionId = sessionId;
 
-        console.log('HEADSET ID -----------------------------------')
-        console.log(this.headsetId)
-        console.log('\r\n')
-        console.log('CONNECT STATUS -------------------------------')
-        console.log(this.ctResult)
-        console.log('\r\n')
-        console.log('AUTH TOKEN -----------------------------------')
-        console.log(this.authToken)
-        console.log('\r\n')
-        console.log('SESSION ID -----------------------------------')
-        console.log(this.sessionId)
-        console.log('\r\n')
+        console.log('HEADSET ID -----------------------------------');
+        console.log(this.headsetId);
+        console.log('\r\n');
+        console.log('CONNECT STATUS -------------------------------');
+        console.log(this.ctResult);
+        console.log('\r\n');
+        console.log('AUTH TOKEN -----------------------------------');
+        console.log(this.authToken);
+        console.log('\r\n');
+        console.log('SESSION ID -----------------------------------');
+        console.log(this.sessionId);
+        console.log('\r\n');
     }
 
     /**
@@ -285,26 +270,25 @@ class Cortex {
      * - check if app is granted for access
      * - query session info to prepare for sub and train
      */
-    async checkGrantAccessAndQuerySessionInfo(){
-        let requestAccessResult = ""
-        await this.requestAccess().then((result)=>{requestAccessResult=result})
+    async checkGrantAccessAndQuerySessionInfo() {
+        let requestAccessResult = "";
+        await this.requestAccess().then((result)=>{requestAccessResult=result});
 
-        let accessGranted = JSON.parse(requestAccessResult)
+        let accessGranted = JSON.parse(requestAccessResult);
     
         // check if user is logged in CortexUI
         if ("error" in accessGranted) {
-            console.log('You must login on CortexUI before request for grant access then rerun')
-            throw new Error('You must login on CortexUI before request for grant access')
+            console.log('You must login on CortexUI before request for grant access then rerun');
+            throw new Error('You must login on CortexUI before request for grant access');
         }
         else {
-            console.log(accessGranted['result']['message'])
-            // console.log(accessGranted['result'])
+            console.log(accessGranted['result']['message']);
             if (accessGranted['result']['accessGranted']) {
-                await this.querySessionInfo()
+                await this.querySessionInfo();
             }
             else {
-                console.log('You must accept access request from this app on CortexUI then rerun')
-                throw new Error('You must accept access request from this app on CortexUI')
+                console.log('You must accept access request from this app on CortexUI then rerun');
+                throw new Error('You must accept access request from this app on CortexUI');
             }
         }   
     }
@@ -318,8 +302,8 @@ class Cortex {
      */
     subscribe(streams) {
         this.socket.on('open', async () => {
-            await this.checkGrantAccessAndQuerySessionInfo()
-            this.subRequest(streams, this.authToken, this.sessionId)
+            await this.checkGrantAccessAndQuerySessionInfo();
+            this.subRequest(streams, this.authToken, this.sessionId);
 
             this.socket.on('message', (data) => {
                 this.data = data;
@@ -327,16 +311,17 @@ class Cortex {
 
             wss.on('connection', (ws) => {
                 ws.on('message', (message) => {
-                    console.log("Received:", message)
+                    console.log("Received:", message);
                 });
                 
                 ws.send(this.data);
             });
-        })
+        });
     }
 
     setupProfile(authToken, headsetId, profileName, status) {
-        const SETUP_PROFILE_ID = 7
+        const SETUP_PROFILE_ID = 7;
+        let socket = this.socket;
         let setupProfileRequest = {
             "jsonrpc": "2.0",
             "method": "setupProfile",
@@ -347,32 +332,31 @@ class Cortex {
               "status": status
             },
             "id": SETUP_PROFILE_ID
-        }
-        // console.log(setupProfileRequest)
-        let socket = this.socket;
-        return new Promise(function(resolve, reject) {
+        };
+
+        return new Promise((resolve, reject) => {
             socket.send(JSON.stringify(setupProfileRequest));
             socket.on('message', (data) => {
                 if (status=='create') {
-                    resolve(data)
+                    resolve(data);
                 }
                 try {
-                    // console.log('inside setup profile', data)
                     if (JSON.parse(data)['id']==SETUP_PROFILE_ID) {
                         if (JSON.parse(data)['result']['action'] == status) {
-                            console.log('SETUP PROFILE -------------------------------------')
-                            console.log(data)
-                            console.log('\r\n')
-                            resolve(data)
+                            console.log('SETUP PROFILE -------------------------------------');
+                            console.log(data);
+                            console.log('\r\n');
+                            resolve(data);
                         }
                     }
                 } catch (error) { }
-            })
-        })
+            });
+        });
     }
 
     queryProfileRequest(authToken) {
-        const QUERY_PROFILE_ID = 9
+        const QUERY_PROFILE_ID = 9;
+        let socket = this.socket;
         let queryProfileRequest = {
             "jsonrpc": "2.0",
             "method": "queryProfile",
@@ -380,30 +364,28 @@ class Cortex {
               "cortexToken": authToken
             },
             "id": QUERY_PROFILE_ID
-        }
+        };
 
-        let socket = this.socket
-        return new Promise(function(resolve, reject) {
-            socket.send(JSON.stringify(queryProfileRequest))
+        return new Promise((resolve, reject) => {
+            socket.send(JSON.stringify(queryProfileRequest));
             socket.on('message', (data) => {
                 try {
                     if (JSON.parse(data)['id']==QUERY_PROFILE_ID) {
-                        // console.log(data)
-                        resolve(data)
+                        resolve(data);
                     }
                 } catch (error) { }
-            })
-        })
+            });
+        });
     }
 }
 
 const streams = ["pow"];
 const cortexSocketUrl = "wss://localhost:6868";
 const user = {
-    "license":"",
-    "clientId":"epeHxh9VCDR3o6w6zCe7B0rsWvkzhXpvziV2FpH4",
-    "clientSecret":"NO3fh9Z6Hb93M3eAodoifXicvK4mwyTT7fm5CaifRFFr8A7phFZtan9kmsfkNAXixizGOjtlXCv96k6ZA3VkKaJuhQDOLBbeWTo1ltKd1pBVIDgI1Luj6bYlynjGHf1f",
-    "debit":100
+    "license": "",
+    "clientId": "epeHxh9VCDR3o6w6zCe7B0rsWvkzhXpvziV2FpH4",
+    "clientSecret": "NO3fh9Z6Hb93M3eAodoifXicvK4mwyTT7fm5CaifRFFr8A7phFZtan9kmsfkNAXixizGOjtlXCv96k6ZA3VkKaJuhQDOLBbeWTo1ltKd1pBVIDgI1Luj6bYlynjGHf1f",
+    "debit": 100
 };
 
 const wss = new WebSocket.Server({
