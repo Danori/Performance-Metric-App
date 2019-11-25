@@ -4,6 +4,10 @@ Download the GitHub repository .zip above and extract it into a directory of you
 
 The application has a few dependencies or order to get working:
 
+Google Chrome: https://www.google.com/chrome/
+
+Google chrome is the preferred web browser to run our web application.
+
 An Emotiv Account: https://www.emotiv.com/my-account/
 
 Create an Emotiv account, and login. Once logged in, navigate to the "Cortex Apps" tab, and register a new application. Be sure to write down or save your client ID and client secret, these will be required in order to properly interface with the Performance Metrics App, since we did not purchase a license for this application.
