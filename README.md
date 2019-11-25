@@ -10,23 +10,23 @@ Create an Emotiv account, and login. Once logged in, navigate to the "Cortex App
 
 Emotiv App: https://www.emotiv.com/emotiv-bci/
 
+Once the Emotiv applications are installed, there will be one named "Emotiv App". This will be used to interface with the Emotiv Insight device itself.
+
 node.js: https://nodejs.org/en/
 
-With node.js, you should also install the node package manager (npm). Navigate to the directory containing the GitHub clone, and type the following:
+With node.js, you should also install the node package manager (npm). In the terminal, type the following command:
 
 ```
 npm install ws
 ```
 
-
-Connect your Emotiv Insight via the Emotiv App. The dongle should be connected and the device should appear under the "Devices" tab.
-Then, in the same directory as before, type the following:
+This will install the node websocket library used by the cortex application. Connect to your Emotiv Insight via the Emotiv App. The dongle should be connected and the device should appear under the "Devices" tab. In lines  Then, in the same directory as before, type the following:
 
 ```
 node app
 ```
 
-This will run the server which will communicate with the device. However, it will provide an error the first run, and will ask you to approve the PerformanceMetrics app, navigate to the Emotiv app and approve the app. Rerun:
+This will run the server which will communicate with the device. However, it will provide an error the first run, and will ask you to approve the PerformanceMetrics app. Navigate to the Emotiv app and approve the cortex app. With the terminal selected and the app approved press ctrl+C to terminate the server process. Rerun:
 
 ```
 node app
