@@ -1,4 +1,5 @@
 # Performance Metrics App
+By William Horn, Seshani Thirunayagam, Calvin Crino, Mark Yo
 
 Download the GitHub repository .zip above and extract it into a directory of your choosing. Open a terminal window and navigate to the respective directory.
 
