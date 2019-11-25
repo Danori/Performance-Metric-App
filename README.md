@@ -3,7 +3,7 @@ By William Horn, Seshani Thirunayagam, Calvin Crino, Mark Yo
 
 Download the GitHub repository .zip above and extract it into a directory of your choosing. Open a terminal window (if your machine is running Windows, Powershell is the preferred terminal) and navigate to the respective directory.
 
-The application has a few dependencies or order to get working:
+The application has a few dependencies in order to get working:
 
 Google Chrome: https://www.google.com/chrome/
 
