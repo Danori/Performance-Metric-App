@@ -20,13 +20,13 @@ With node.js, you should also install the node package manager (npm). In the ter
 npm install ws
 ```
 
-This will install the node websocket library used by the cortex application. Connect to your Emotiv Insight via the Emotiv App. The dongle should be connected and the device should appear under the "Devices" tab. In lines  Then, in the same directory as before, type the following:
+This will install the node websocket library used by the cortex application. Connect to your Emotiv Insight via the Emotiv App. The dongle should be connected and the device should appear under the "Devices" tab. At lines ~350 of the app.js source file, enter your cliend ID and secret in the specified entried of the user JSON. This will authorize you the use the application. Then, in the same directory as before, type the following:
 
 ```
 node app
 ```
 
-This will run the server which will communicate with the device. However, it will provide an error the first run, and will ask you to approve the PerformanceMetrics app. Navigate to the Emotiv app and approve the cortex app. With the terminal selected and the app approved press ctrl+C to terminate the server process. Rerun:
+This will run the server which will communicate with the device. However, it will provide an error the first run, and will ask you to approve the PerformanceMetrics app. Navigate to the Emotiv app again and approve the cortex app. With the terminal selected and the app approved press ctrl+C to terminate the server process. Rerun:
 
 ```
 node app
@@ -34,4 +34,4 @@ node app
 
 Note: Be sure to always have the server running before opening the html file, or you may encounter errors.
 
-This time, the server should start successfully and provide you with a session ID. The app may require permission from your operating system to access a port, allow it. Open the html file provided in this repository, and you should be able to see you performance metrics in real time! 
+This time, the server should start successfully and provide you with a session ID. The app may require permission from your operating system to access a port, allow it. Open the html file provided in this repository, and you should be able to see you performance metrics in real time!
