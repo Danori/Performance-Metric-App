@@ -1,7 +1,7 @@
 # Performance Metrics App
 By William Horn, Seshani Thirunayagam, Calvin Crino, Mark Yo
 
-Download the GitHub repository .zip above and extract it into a directory of your choosing. Open a terminal window and navigate to the respective directory.
+Download the GitHub repository .zip above and extract it into a directory of your choosing. Open a terminal window (if your machine is running Windows, Powershell is the preferred terminal) and navigate to the respective directory.
 
 The application has a few dependencies or order to get working:
 
