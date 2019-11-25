@@ -24,7 +24,7 @@ With node.js, you should also install the node package manager (npm). In the ter
 npm install ws
 ```
 
-This will install the node websocket library used by the cortex application. Connect to your Emotiv Insight via the Emotiv App. The dongle should be connected and the device should appear under the "Devices" tab. At lines ~350 of the app.js source file, enter your cliend ID and secret in the specified entried of the user JSON. This will authorize you the use the application. Then, in the same directory as before, type the following:
+This will install the node websocket library used by the cortex application. Connect to your Emotiv Insight via the Emotiv App. The dongle should be connected and the device should appear under the "Devices" tab. At lines ~350 of the app.js source file, enter your written / saved client ID and secret in the specified entries of the user JSON. This will authorize you the use the application. Then, in the same directory as before, type the following:
 
 ```
 node app
