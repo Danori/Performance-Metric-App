@@ -1,5 +1,8 @@
 const WebSocket = require('ws');
 
+/**
+ * - Cortex class to interface with the Emotiv Insight.
+ */
 class Cortex {
     constructor (user, socketUrl) {
         process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
@@ -8,6 +11,9 @@ class Cortex {
         this.data = "";
     }
 
+    /**
+     * - Query the Emotiv App and retrieve the headset ID.
+     */
     queryHeadsetId() {
         const QUERY_HEADSET_ID = 2;
         let socket = this.socket;
@@ -37,6 +43,9 @@ class Cortex {
         });
     }
 
+    /**
+     * - Request access for the cortex application using the user ID and secret.
+     */
     requestAccess() {
         const REQUEST_ACCESS_ID = 1;
         let socket = this.socket;
@@ -63,6 +72,9 @@ class Cortex {
         });
     }
 
+    /**
+     * - Authorize the user and retrieve the cortex token for the session.
+     */
     authorize() {
         const AUTHORIZE_ID = 4;
         let socket = this.socket;
@@ -91,6 +103,9 @@ class Cortex {
         });
     }
 
+    /**
+     * - Request control for the device to subscribe to data streams. 
+     */
     controlDevice(headsetId) {
         const CONTROL_DEVICE_ID = 3;
         let socket = this.socket;
@@ -116,6 +131,9 @@ class Cortex {
         });
     }
 
+    /**
+     * - Create a session to interface with the device.
+     */
     createSession(authToken, headsetId) {
         const CREATE_SESSION_ID = 5;
         let socket = this.socket;
@@ -143,68 +161,9 @@ class Cortex {
         });
     }
 
-    startRecord(authToken, sessionId, recordName) {
-        const CREATE_RECORD_REQUEST_ID = 11;
-        let socket = this.socket;
-        let createRecordRequest = {
-            "jsonrpc": "2.0", 
-            "method": "updateSession", 
-            "params": {
-                "cortexToken": authToken,
-                "session": sessionId,
-                "status": "startRecord",
-                "title": recordName,
-                "description":"test_marker",
-                "groupName": "QA"
-            }, 
-            "id": CREATE_RECORD_REQUEST_ID
-        };
-
-        return new Promise((resolve, reject) => {
-            socket.send(JSON.stringify(createRecordRequest));
-            socket.on('message', (data) => {
-                try {
-                    if (JSON.parse(data)['id']==CREATE_RECORD_REQUEST_ID) {
-                        console.log('CREATE RECORD RESULT --------------------------------');
-                        console.log(data);
-                        resolve(data);
-                    }
-                } catch (error) { }
-            });
-        });
-    }
-
-    stopRecord(authToken, sessionId, recordName) {
-        const STOP_RECORD_REQUEST_ID = 12;
-        let socket = this.socket;
-        let stopRecordRequest = {
-            "jsonrpc": "2.0", 
-            "method": "updateSession", 
-            "params": {
-                "cortexToken": authToken,
-                "session": sessionId,
-                "status": "stopRecord",
-                "title": recordName,
-                "description":"test_marker",
-                "groupName": "QA"
-            }, 
-            "id": STOP_RECORD_REQUEST_ID
-        };
-
-        return new Promise((resolve, reject) => {
-            socket.send(JSON.stringify(stopRecordRequest));
-            socket.on('message', (data) => {
-                try {
-                    if (JSON.parse(data)['id']==STOP_RECORD_REQUEST_ID) {
-                        console.log('STOP RECORD RESULT --------------------------------');
-                        console.log(data);
-                        resolve(data);
-                    }
-                } catch (error) { }
-            });
-        });
-    }
-
+    /**
+     * - Request for the passed data streams from the device.
+     */
     subRequest(stream, authToken, sessionId) {
         const SUB_REQUEST_ID = 6;
         let socket = this.socket;
@@ -228,7 +187,7 @@ class Cortex {
     }
 
     /**
-     * - query headset infor
+     * - query headset information
      * - connect to headset with control device request
      * - authentication and get back auth token
      * - create session and get back session id
@@ -266,7 +225,7 @@ class Cortex {
     }
 
     /**
-     * - check if user logined
+     * - check if user logged in
      * - check if app is granted for access
      * - query session info to prepare for sub and train
      */
@@ -295,10 +254,9 @@ class Cortex {
 
 
     /**
-     * 
      * - check login and grant access
-     * - subcribe for stream
-     * - logout data stream to console or file
+     * - subscribe To the passed streams
+     * - Send data to web app and log requests.
      */
     subscribe(streams) {
         this.socket.on('open', async () => {
@@ -312,13 +270,15 @@ class Cortex {
             wss.on('connection', (ws) => {
                 ws.on('message', (message) => {
                     console.log("Received:", message);
+                    ws.send(this.data);
                 });
-                
-                ws.send(this.data);
             });
         });
     }
 
+    /**
+     * - Set up user profile passed off all prior requests / validations.
+     */
     setupProfile(authToken, headsetId, profileName, status) {
         const SETUP_PROFILE_ID = 7;
         let socket = this.socket;
@@ -354,6 +314,9 @@ class Cortex {
         });
     }
 
+    /**
+     * 
+     */
     queryProfileRequest(authToken) {
         const QUERY_PROFILE_ID = 9;
         let socket = this.socket;
@@ -379,18 +342,23 @@ class Cortex {
     }
 }
 
+// Define which streams to subscribe to.
 const streams = ["pow"];
+// Define the port.
 const cortexSocketUrl = "wss://localhost:6868";
 const user = {
     "license": "",
-    "clientId": "epeHxh9VCDR3o6w6zCe7B0rsWvkzhXpvziV2FpH4",
-    "clientSecret": "NO3fh9Z6Hb93M3eAodoifXicvK4mwyTT7fm5CaifRFFr8A7phFZtan9kmsfkNAXixizGOjtlXCv96k6ZA3VkKaJuhQDOLBbeWTo1ltKd1pBVIDgI1Luj6bYlynjGHf1f",
+    "clientId": "", // Enter your client ID here.
+    "clientSecret": "", // Enter you client secret here.
     "debit": 100
 };
 
+// Set up a websocket server on port 8080.
 const wss = new WebSocket.Server({
     port: 8080
 });
 
+// Create a cortex interface object.
 const cortex = new Cortex(user, cortexSocketUrl);
+// Subscribe to the relevent streams.
 cortex.subscribe(streams);
